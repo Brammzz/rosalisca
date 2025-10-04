@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:5000/api/auth';
+import { API_ENDPOINTS } from '../config/api';
+
+const API_URL = API_ENDPOINTS.auth;
 
 export interface AuthResponse {
   _id: string;

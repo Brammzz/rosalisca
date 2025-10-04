@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
-const API_URL = 'http://localhost:5000/api/clients';
+const API_URL = API_ENDPOINTS.clients;
 
 // Define the structure of the Client object, matching the backend model
 export interface Client {
