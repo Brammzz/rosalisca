@@ -331,5 +331,3 @@ Untuk pertanyaan atau bantuan:
 Copyright © 2025 PT. Rosa Lisca Group. All rights reserved.
 
 ---
-
-**Dikembangkan dengan ❤️ oleh Tim Development PT. Rosa Lisca Group**
