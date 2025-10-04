@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
 
-const API_URL = API_ENDPOINTS.contacts;
+const API_URL = `${API_ENDPOINTS.contacts}/api/contacts`;
 
 // Types
 export interface Contact {

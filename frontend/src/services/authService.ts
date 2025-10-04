@@ -1,6 +1,6 @@
 import { API_ENDPOINTS } from '../config/api';
 
-const API_URL = API_ENDPOINTS.auth;
+const API_URL = `${API_ENDPOINTS.auth}/api/auth`;
 
 export interface AuthResponse {
   _id: string;

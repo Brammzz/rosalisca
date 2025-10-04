@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_ENDPOINTS, API_BASE_URL } from '../config/api';
 
-const API_URL = API_ENDPOINTS.certificates;
+const API_URL = `${API_ENDPOINTS.certificates}/api/certificates`;
 
 // Define the structure of the Certificate object, matching the backend model
 export interface Certificate {

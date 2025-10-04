@@ -6,26 +6,29 @@ const getApiUrl = (): string => {
     return import.meta.env.VITE_API_URL || 'http://localhost:5000';
   } else {
     // Production environment
-    return import.meta.env.VITE_API_URL || 'https://rosalisca-backend.vercel.app';
+    const baseUrl = import.meta.env.VITE_API_URL || 'https://rosalisca-backend.vercel.app';
+    // Remove trailing /api if it exists to avoid duplication
+    return baseUrl.replace(/\/api\/?$/, '');
   }
 };
 
 export const API_BASE_URL = getApiUrl();
 
-// API endpoints
+// API endpoints - return base URL only, let services add their own paths
 export const API_ENDPOINTS = {
-  auth: `${API_BASE_URL}/api/auth`,
-  projects: `${API_BASE_URL}/api/projects`,
-  clients: `${API_BASE_URL}/api/clients`,
-  contacts: `${API_BASE_URL}/api/contacts`,
-  careers: `${API_BASE_URL}/api/careers`,
-  certificates: `${API_BASE_URL}/api/certificates`,
-  companies: `${API_BASE_URL}/api/companies`,
-  dashboard: `${API_BASE_URL}/api/dashboard`,
+  auth: `${API_BASE_URL}`,
+  projects: `${API_BASE_URL}`,
+  clients: `${API_BASE_URL}`,
+  contacts: `${API_BASE_URL}`,
+  careers: `${API_BASE_URL}`,
+  certificates: `${API_BASE_URL}`,
+  companies: `${API_BASE_URL}`,
+  dashboard: `${API_BASE_URL}`,
 };
 
 console.log('API Configuration:', {
   mode: import.meta.env.MODE,
   dev: import.meta.env.DEV,
-  baseUrl: API_BASE_URL
+  baseUrl: API_BASE_URL,
+  endpoints: API_ENDPOINTS
 });
