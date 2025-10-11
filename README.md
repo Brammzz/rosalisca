@@ -198,12 +198,6 @@ VITE_API_URL=http://localhost:5000/api
 - Dapat membuat, edit, dan hapus semua konten
 - Akses dashboard dan analytics
 
-### HR (Human Resources)
-
-- Manajemen karir dan aplikasi
-- Review CV dan jadwal interview
-- Update status aplikasi
-
 ### Public Users
 
 - Browse proyek dan konten publik
@@ -318,13 +312,6 @@ npm run test
 - Public website dengan responsive design
 - Career application system
 - Contact management system
-
-## 📞 Support
-
-Untuk pertanyaan atau bantuan:
-
-- Email: development@rosalisca.com
-- Issues: Gunakan GitHub Issues untuk bug reports
 
 ## 📄 License
 
