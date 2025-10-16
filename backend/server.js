@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import connectDB from './src/config/db.js';
@@ -45,7 +46,7 @@ const customCors = (req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, Cookie'
   );
 
   // Handle preflight request (OPTIONS)
@@ -88,9 +89,10 @@ const corsOptions = {
 };
 
 // Middleware
-app.use(customCors); // Apply custom CORS first
+app.use(customCors);
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
