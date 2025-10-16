@@ -42,6 +42,9 @@ git push origin main
    - Project Name: `rosalisca-backend`
    - Framework Preset: "Other"
    - Root Directory: `backend`
+   - Build Command: (leave empty for Express.js)
+   - Output Directory: (leave empty for Express.js)
+   - Install Command: `npm install`
 4. **Environment Variables:**
    ```
    NODE_ENV=production
@@ -79,6 +82,9 @@ VITE_API_URL=https://rosalisca-backend.vercel.app/api
    - Project Name: `rosalisca-frontend`
    - Framework Preset: "Vite"
    - Root Directory: `frontend`
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Install Command: `npm install`
 3. **Environment Variables:**
    ```
    VITE_API_URL=https://rosalisca-backend.vercel.app/api
