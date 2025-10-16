@@ -130,10 +130,16 @@ app.use('/api/companies', companyRoutes);
 
 // Global error handler for CORS issues
 app.use((err, req, res, next) => {
+  console.error('Global Error Handler:', err);
+  
   if (err && err.message && err.message.includes('CORS')) {
     res.status(200).json({ error: 'CORS Error', message: err.message });
   } else {
-    next(err);
+    res.status(500).json({ 
+      error: 'Internal Server Error', 
+      message: err.message || 'Something went wrong!',
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 });
 
