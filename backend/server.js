@@ -63,8 +63,18 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve static files from uploads directory (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+} else {
+  // In production (Vercel), handle uploads differently
+  app.get('/uploads/*', (req, res) => {
+    res.status(404).json({ 
+      message: 'Static files not available in serverless environment',
+      suggestion: 'Use cloud storage for file uploads'
+    });
+  });
+}
 
 console.log('Registering API routes...');
 // Routes
@@ -112,22 +122,49 @@ app.get('/api/env-check', (req, res) => {
   });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/clients', clientRoutes);
-app.use('/api/contacts', contactRoutes);
-app.use('/api/careers', careerRoutes);
-app.use('/api/certificates', certificateRoutes);
-app.use('/api/companies', companyRoutes);
+// Safely import and use routes with error handling
+try {
+  app.use('/api/auth', authRoutes);
+  app.use('/api/admin', adminRoutes);
+  app.use('/api/dashboard', dashboardRoutes);
+  app.use('/api/projects', projectRoutes);
+  app.use('/api/clients', clientRoutes);
+  app.use('/api/contacts', contactRoutes);
+  app.use('/api/careers', careerRoutes);
+  app.use('/api/certificates', certificateRoutes);
+  app.use('/api/companies', companyRoutes);
+  console.log('✅ All routes registered successfully');
+} catch (error) {
+  console.error('❌ Error registering routes:', error);
+  
+  // Fallback routes if imports fail
+  app.use('/api/*', (req, res) => {
+    res.status(503).json({
+      error: 'Service Temporarily Unavailable',
+      message: 'Routes failed to load',
+      suggestion: 'Please check environment variables and try again'
+    });
+  });
+}
 
 // Global error handler for CORS issues
 app.use((err, req, res, next) => {
+  console.error('Global Error Handler:', err);
+  
   if (err && err.message && err.message.includes('CORS')) {
     res.status(200).json({ error: 'CORS Error', message: err.message });
+  } else if (err && err.message && err.message.includes('ENOENT')) {
+    res.status(500).json({ 
+      error: 'File System Error', 
+      message: 'File or directory not found (serverless environment)',
+      suggestion: 'This might be a serverless environment limitation'
+    });
   } else {
-    next(err);
+    res.status(500).json({ 
+      error: 'Internal Server Error', 
+      message: err.message || 'Something went wrong!',
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 });
 
@@ -153,12 +190,17 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    console.log('🔄 Connecting to database...');
-    await connectDB();
-    console.log('✅ Database connected successfully');
-    
-    // Auto-create admin user if not exists
-    await createDefaultAdmin();
+    // Only connect to database if environment variables are set
+    if (process.env.MONGODB_URI) {
+      console.log('🔄 Connecting to database...');
+      await connectDB();
+      console.log('✅ Database connected successfully');
+      
+      // Auto-create admin user if not exists (only if DB connected)
+      await createDefaultAdmin();
+    } else {
+      console.log('⚠️ No MONGODB_URI found, skipping database connection');
+    }
     
     // Only start listening in development (not in Vercel)
     if (process.env.NODE_ENV !== 'production') {
@@ -166,6 +208,7 @@ const startServer = async () => {
     }
   } catch (error) {
     console.error('❌ Failed to start server:', error);
+    // In production, don't exit process - let Vercel handle it
     if (process.env.NODE_ENV !== 'production') {
       process.exit(1);
     }
@@ -175,6 +218,12 @@ const startServer = async () => {
 // Function to create default admin user
 const createDefaultAdmin = async () => {
   try {
+    // Only try to create admin if database is connected
+    if (!process.env.MONGODB_URI) {
+      console.log('⚠️ Skipping admin creation - no database connection');
+      return;
+    }
+
     const User = (await import('./src/models/User.js')).default;
     
     const adminEmail = 'admin@gmail.com';
