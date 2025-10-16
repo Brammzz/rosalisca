@@ -7,6 +7,9 @@ export interface AuthResponse {
   email: string;
   role: string;
   token: string;
+  cookieToken?: string;
+  success?: boolean;
+  message?: string;
 }
 
 export interface LoginCredentials {
@@ -45,7 +48,19 @@ export const loginAPI = async (credentials: LoginCredentials): Promise<AuthRespo
     }
 
     const data = await response.json();
-    console.log('Login successful');
+    console.log('Login successful, response data:', data);
+    
+    // Validate response structure
+    if (!data || typeof data !== 'object') {
+      throw new Error('Invalid response format from server');
+    }
+    
+    // Check if required fields exist
+    if (!data._id || !data.email || !data.role || !data.token) {
+      console.error('Missing required fields in response:', data);
+      throw new Error('Invalid response structure: missing required fields');
+    }
+    
     return data;
     
   } catch (error) {
