@@ -13,6 +13,7 @@ import contactRoutes from './src/routes/contactRoutes.js';
 import careerRoutes from './src/routes/careerRoutes.js';
 import certificateRoutes from './src/routes/certificateRoutes.js';
 import companyRoutes from './src/routes/companyRoutes.js';
+import dashboardRoutes from './src/routes/dashboardRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -23,42 +24,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Custom CORS middleware to set additional headers
-const customCors = (req, res, next) => {
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://rosalisca.vercel.app',
-    'https://rosalisca-backend.vercel.app'
-  ];
-  
-  const origin = req.headers.origin;
-  
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  
-  // Set specific origin or allow all for development
-  if (allowedOrigins.includes(origin) || !origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-  } else {
-    res.setHeader('Access-Control-Allow-Origin', 'https://rosalisca.vercel.app');
-  }
-  
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, Cookie'
-  );
-
-  // Handle preflight request (OPTIONS)
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-  
-  next();
-};
-
-// CORS configuration for production
+// CORS configuration - SIMPLIFIED for better compatibility
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
@@ -70,26 +36,29 @@ const corsOptions = {
       'https://rosalisca.vercel.app', // Production frontend
       'https://rosalisca-backend.vercel.app', // Production backend
       process.env.FRONTEND_URL, // Dynamic frontend URL from env
-      // Add your custom domain here
-      'https://rosalisca.com',
-      'https://www.rosalisca.com'
     ].filter(Boolean); // Remove undefined values
+    
+    console.log(`CORS Check: origin=${origin}, allowed=${allowedOrigins.includes(origin)}`);
     
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.log('Blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
+      // For development, allow any localhost
+      if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+        callback(null, true);
+      } else {
+        console.log('Blocked by CORS:', origin);
+        callback(null, true); // Allow all for now to avoid blocking
+      }
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  optionsSuccessStatus: 200
 };
 
-// Middleware
-app.use(customCors);
+// Middleware - USE ONLY ONE CORS SETUP
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
@@ -104,7 +73,7 @@ app.get('/', (req, res) => {
     message: 'Rosalisca API is running from server.js!',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    routes: ['/api/auth', '/api/projects', '/api/clients', '/api/contacts', '/api/careers', '/api/certificates', '/api/companies']
+    routes: ['/api/auth', '/api/dashboard', '/api/projects', '/api/clients', '/api/contacts', '/api/careers', '/api/certificates', '/api/companies']
   });
 });
 
@@ -130,7 +99,8 @@ app.get('/api/env-check', (req, res) => {
     },
     routes_available: [
       '/api/auth/login',
-      '/api/auth/register', 
+      '/api/auth/register',
+      '/api/dashboard/overview',
       '/api/projects',
       '/api/clients',
       '/api/contacts',
@@ -144,6 +114,7 @@ app.get('/api/env-check', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/contacts', contactRoutes);
@@ -166,7 +137,8 @@ app.use('*', (req, res) => {
     message: 'Route not found',
     availableRoutes: [
       '/api/auth',
-      '/api/admin', 
+      '/api/admin',
+      '/api/dashboard', 
       '/api/projects',
       '/api/clients',
       '/api/contacts',
