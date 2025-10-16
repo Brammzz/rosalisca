@@ -160,31 +160,25 @@ app.use('*', (req, res) => {
   });
 });
 
-// Vercel serverless function handler
+// Initialize database connection once
 let dbConnected = false;
 
 const initDB = async () => {
   if (!dbConnected) {
     try {
+      console.log('Connecting to database...');
       await connectDB();
       dbConnected = true;
       console.log('Database connected successfully');
     } catch (error) {
       console.error('Database connection failed:', error);
+      throw error;
     }
   }
 };
 
-// Vercel handler
-export default async (req, res) => {
-  try {
-    await initDB();
-    return app(req, res);
-  } catch (error) {
-    console.error('Handler error:', error);
-    return res.status(500).json({ 
-      error: 'Server initialization failed',
-      message: error.message 
-    });
-  }
-};
+// Initialize database on module load
+initDB().catch(console.error);
+
+// Export the Express app directly for Vercel
+export default app;

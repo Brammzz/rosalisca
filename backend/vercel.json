@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.js",
+      "src": "api/simple.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/test",
-      "dest": "/api/test.js",
+      "dest": "/api/simple.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
@@ -25,7 +25,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.js",
+      "dest": "/api/simple.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
