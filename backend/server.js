@@ -24,38 +24,10 @@ const app = express();
 
 // CORS configuration for production
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:5173', // Local development
-      'http://localhost:3000', // Alternative local port
-      'https://rosalisca.vercel.app', // Production frontend
-      /^https:\/\/.*\.vercel\.app$/, // Any vercel app
-    ];
-    
-    // Check if origin is allowed
-    const isAllowed = allowedOrigins.some(allowedOrigin => {
-      if (typeof allowedOrigin === 'string') {
-        return origin === allowedOrigin;
-      }
-      if (allowedOrigin instanceof RegExp) {
-        return allowedOrigin.test(origin);
-      }
-      return false;
-    });
-    
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true, // Allow all origins for debugging
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   preflightContinue: false,
   optionsSuccessStatus: 200
 };
@@ -82,14 +54,53 @@ app.use('/api/careers', careerRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/companies', companyRoutes);
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error occurred:', err);
+  console.error('Stack trace:', err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+  console.log('404 - Route not found:', req.method, req.originalUrl);
+  res.status(404).json({
+    success: false,
+    message: 'Route not found',
+    path: req.originalUrl
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
+    console.log('Starting server...');
+    console.log('Environment variables:');
+    console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
+    console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'Set' : 'Not set');
+    console.log('PORT:', process.env.PORT || 5000);
+    
     await connectDB();
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      console.log('Available routes:');
+      console.log('- GET /')
+      console.log('- /api/auth')
+      console.log('- /api/clients')
+      console.log('- /api/projects')
+      console.log('- /api/contacts')
+      console.log('- /api/careers')
+      console.log('- /api/certificates')
+      console.log('- /api/companies')
+    });
   } catch (error) {
     console.error('Failed to start server:', error);
+    console.error('Stack trace:', error.stack);
     process.exit(1);
   }
 };
