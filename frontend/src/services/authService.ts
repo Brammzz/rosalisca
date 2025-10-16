@@ -14,20 +14,6 @@ export interface LoginCredentials {
   password: string;
 }
 
-const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
-
-export interface AuthResponse {
-  _id: string;
-  email: string;
-  role: string;
-  token: string;
-}
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
 export const loginAPI = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
     console.log('Attempting login to:', `${API_URL}/login`);
