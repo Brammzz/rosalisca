@@ -15,11 +15,21 @@ const ClientLogos = () => {
     const loadClients = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         const response = await getClientsAPI({ status: 'active', limit: 8 });
-        setClients(response.data);
-      } catch (err) {
+        
+        // Ensure response has the expected structure
+        if (response && response.data && Array.isArray(response.data)) {
+          setClients(response.data);
+        } else {
+          console.warn('Unexpected response format:', response);
+          setClients([]);
+          setError('Format data tidak sesuai.');
+        }
+      } catch (err: any) {
         setError('Gagal memuat data klien.');
-        console.error(err);
+        setClients([]); // Ensure clients is always an array
+        console.error('Error loading clients:', err);
       } finally {
         setIsLoading(false);
       }
@@ -58,8 +68,9 @@ const ClientLogos = () => {
   const getImageUrl = (imagePath: string) => {
     if (!imagePath || imagePath === '') return '/placeholder.svg';
     if (imagePath.startsWith('http')) return imagePath;
-    if (imagePath.startsWith('/uploads')) return `http://localhost:5000${imagePath}`;
-    return `http://localhost:5000/uploads/${imagePath}`;
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+    if (imagePath.startsWith('/uploads')) return `${baseUrl}${imagePath}`;
+    return `${baseUrl}/uploads/${imagePath}`;
   };
 
   return (
@@ -70,7 +81,7 @@ const ClientLogos = () => {
             Klien Terpercaya
           </div>
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-construction-gray-900 mb-6">
-            Dipercaya oleh {clients.length} Klien Terkemuka
+            Dipercaya oleh {clients?.length || 0}+ Klien Terkemuka
           </h2>
           <p className="text-lg text-construction-gray-600 max-w-3xl mx-auto">
             Kami bangga telah melayani berbagai kementerian, lembaga pemerintah, dan perusahaan terkemuka di Indonesia dengan hasil yang memuaskan.

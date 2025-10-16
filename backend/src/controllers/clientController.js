@@ -78,10 +78,10 @@ const getClients = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    data: clients,
+    data: clients || [], // Ensure data is always an array
     pagination: {
       page: 1,
-      limit: clients.length,
+      limit: clients?.length || 0,
       total,
       pages: 1
     },
@@ -92,8 +92,24 @@ const getClients = asyncHandler(async (req, res) => {
     console.error('Error in getClients:', error);
     res.status(500).json({
       success: false,
+      data: [], // Always return empty array on error
       message: 'Error fetching clients',
-      error: error.message
+      error: error.message,
+      pagination: {
+        page: 1,
+        limit: 0,
+        total: 0,
+        pages: 0
+      },
+      statistics: {
+        total: 0,
+        government: 0,
+        private: 0,
+        bumn: 0,
+        stateOwned: 0,
+        international: 0,
+        totalProjects: 0
+      }
     });
   }
 });

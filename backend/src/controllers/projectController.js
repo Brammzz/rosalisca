@@ -51,9 +51,28 @@ export const uploadProjectImages = upload.fields([
 // @route   GET /api/projects
 // @access  Public
 const getProjects = asyncHandler(async (req, res) => {
-  const filter = req.query.company ? { company: req.query.company } : {};
-  const projects = await Project.find(filter).sort({ createdAt: -1 });
-  res.json(projects);
+  try {
+    const filter = req.query.company ? { company: req.query.company } : {};
+    console.log('Project query filter:', filter);
+    
+    const projects = await Project.find(filter).sort({ createdAt: -1 });
+    console.log('Found projects:', projects.length);
+    
+    res.json({
+      success: true,
+      data: projects || [],
+      total: projects.length
+    });
+  } catch (error) {
+    console.error('Error in getProjects:', error);
+    res.status(500).json({
+      success: false,
+      data: [],
+      message: 'Error fetching projects',
+      error: error.message,
+      total: 0
+    });
+  }
 });
 
 // @desc    Get a single project by ID
