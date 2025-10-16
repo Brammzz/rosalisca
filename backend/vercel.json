@@ -2,20 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/simple.js",
+      "src": "api/index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
-    {
-      "src": "/api/test",
-      "dest": "/api/simple.js",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization"
-      }
-    },
     {
       "src": "/uploads/(.*)",
       "headers": {
@@ -25,11 +16,11 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/api/simple.js",
+      "dest": "/api/index.js",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, X-CSRF-Token, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version"
       }
     }
   ]
