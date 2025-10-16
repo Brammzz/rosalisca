@@ -16,6 +16,13 @@ import companyRoutes from './src/routes/companyRoutes.js';
 // Load environment variables
 dotenv.config();
 
+// Handle production environment
+if (process.env.NODE_ENV === 'production') {
+  console.log('Running in production mode');
+} else {
+  console.log('Running in development mode');
+}
+
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
