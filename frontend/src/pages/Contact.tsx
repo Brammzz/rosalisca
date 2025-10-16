@@ -174,42 +174,6 @@ const Contact = () => {
           </div>
         </section>
 
-        {/* Contact Information */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16 animate-on-scroll">
-              <h2 className="text-3xl md:text-4xl font-heading font-bold text-construction-gray-900 mb-4">
-                Informasi Kontak
-              </h2>
-              <p className="text-lg text-construction-gray-600 max-w-3xl mx-auto">
-                Berbagai cara untuk menghubungi tim kami yang siap membantu Anda 24/7
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {contactInfo.map((info, index) => (
-                <div 
-                  key={index}
-                  className="text-center p-8 rounded-2xl bg-construction-gray-50 hover:bg-white hover:shadow-lg transition-all duration-300 animate-on-scroll"
-                  style={{ animationDelay: `${index * 0.2}s` }}
-                >
-                  <info.icon className="w-12 h-12 text-construction-blue-600 mx-auto mb-6" />
-                  <h3 className="text-lg font-heading font-bold text-construction-gray-900 mb-4">
-                    {info.title}
-                  </h3>
-                  <div className="space-y-2">
-                    {info.details.map((detail, detailIndex) => (
-                      <p key={detailIndex} className="text-construction-gray-600 text-sm">
-                        {detail}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Contact Form */}
         <section className="py-20 bg-construction-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

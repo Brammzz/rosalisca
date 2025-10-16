@@ -160,24 +160,7 @@ const Login = () => {
                 'Masuk ke Dashboard'
               )}
             </Button>
-
-            <div className="text-center">
-              <Link
-                to="/admin/forgot-password"
-                className="text-sm text-construction-blue-600 hover:text-construction-blue-700 hover:underline"
-              >
-                Lupa kata sandi?
-              </Link>
-            </div>
           </form>
-
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <div className="text-center text-xs text-gray-500">
-              <p>Demo Credentials:</p>
-              <p>Email: admin@example.com</p>
-              <p>Password: admin123</p>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>

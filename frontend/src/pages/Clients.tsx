@@ -121,7 +121,7 @@ const Clients = () => {
                 </h1>
                 
                 <p className="text-xl md:text-2xl text-white/95 mb-0 max-w-4xl mx-auto leading-relaxed px-4 drop-shadow-lg">
-                  Lebih dari {statistics?.total || clients.length}+ klien dari berbagai sektor telah mempercayakan proyek konstruksi mereka kepada kami.
+                  Lebih dari {statistics?.total || clients.length} klien dari berbagai sektor telah mempercayakan proyek konstruksi mereka kepada kami.
                 </p>
               </div>
             </div>

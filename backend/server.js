@@ -12,16 +12,10 @@ import contactRoutes from './src/routes/contactRoutes.js';
 import careerRoutes from './src/routes/careerRoutes.js';
 import certificateRoutes from './src/routes/certificateRoutes.js';
 import companyRoutes from './src/routes/companyRoutes.js';
+import dashboardRoutes from './src/routes/dashboardRoutes.js';
 
 // Load environment variables
 dotenv.config();
-
-// Handle production environment
-if (process.env.NODE_ENV === 'production') {
-  console.log('Running in production mode');
-} else {
-  console.log('Running in development mode');
-}
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -29,37 +23,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// CORS configuration for production
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:5173', // Local development
-      'https://rosalisca-frontend.vercel.app',
-      'https://rosalisca.vercel.app', // Production frontend
-    ];
-    
-    // Check if origin is in allowed list or is a Vercel app
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      return callback(null, true);
-    }
-    
-    return callback(new Error('Not allowed by CORS'), false);
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  optionsSuccessStatus: 200
-};
-
 // Middleware
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
-
-// Handle preflight requests explicitly
-app.options('*', cors(corsOptions));
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -78,30 +44,18 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/careers', careerRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/companies', companyRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-// Initialize database connection
 const startServer = async () => {
   try {
     await connectDB();
-    console.log('Database connected successfully');
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (error) {
-    console.error('Failed to connect to database:', error);
-    // Don't exit in serverless environment
-    if (process.env.NODE_ENV !== 'production') {
-      process.exit(1);
-    }
+    console.error('Failed to start server:', error);
+    process.exit(1);
   }
 };
 
-// Initialize the database connection
 startServer();
-
-// For Vercel serverless deployment
-export default app;
-
-// For local development
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}

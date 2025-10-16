@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/certificates`;
+const API_URL = 'http://localhost:5000/api/certificates';
 
 // Define the structure of the Certificate object, matching the backend model
 export interface Certificate {
@@ -247,6 +247,6 @@ export const getCertificateImageUrl = (imagePath: string): string => {
   }
   
   // If it's just a filename or relative path, construct the full URL
-  const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+  const baseUrl = 'http://localhost:5000';
   return `${baseUrl}/uploads/certificates/${imagePath}`;
 };

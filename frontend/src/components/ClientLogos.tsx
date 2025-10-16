@@ -70,7 +70,7 @@ const ClientLogos = () => {
             Klien Terpercaya
           </div>
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-construction-gray-900 mb-6">
-            Dipercaya oleh {clients.length}+ Klien Terkemuka
+            Dipercaya oleh {clients.length} Klien Terkemuka
           </h2>
           <p className="text-lg text-construction-gray-600 max-w-3xl mx-auto">
             Kami bangga telah melayani berbagai kementerian, lembaga pemerintah, dan perusahaan terkemuka di Indonesia dengan hasil yang memuaskan.

@@ -80,26 +80,67 @@ const GunungSahidProfile = () => {
         {/* Company Overview */}
         <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-heading font-bold text-construction-gray-900 mb-6">
-                  Tentang {company.name}
-                </h2>
-                <div className="space-y-4 text-lg text-construction-gray-600">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-heading font-bold text-construction-gray-900 mb-4">
+                Tentang {company.name}
+              </h2>
+              <div className="w-24 h-1 bg-construction-blue-600 mx-auto"></div>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+              {/* Company Image */}
+              <div className="order-2 lg:order-1">
+                <div className="relative">
+                  <img
+                    src={company.logo || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
+                    alt={`${company.name} Office`}
+                    className="w-full h-96 object-cover rounded-2xl shadow-xl"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-construction-blue-600 bg-opacity-10 rounded-2xl"></div>
+                </div>
+                
+                {/* Company Stats */}
+                <div className="grid grid-cols-2 gap-4 mt-8">
+                  <div className="bg-construction-gray-50 p-6 rounded-xl text-center">
+                    <div className="text-2xl font-bold text-construction-blue-600 mb-2">
+                      {company.establishedYear || '2003'}
+                    </div>
+                    <div className="text-sm text-construction-gray-600">Tahun Didirikan</div>
+                  </div>
+                  <div className="bg-construction-gray-50 p-6 rounded-xl text-center">
+                    <div className="text-2xl font-bold text-construction-blue-600 mb-2">20+</div>
+                    <div className="text-sm text-construction-gray-600">Tahun Pengalaman</div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Company Description */}
+              <div className="order-1 lg:order-2">
+                <div className="prose prose-lg text-construction-gray-700 leading-relaxed">
                   {company.history ? (
-                    <div dangerouslySetInnerHTML={{ __html: company.history.replace(/\n/g, '<br />') }} />
+                    <div 
+                      dangerouslySetInnerHTML={{ 
+                        __html: company.history.replace(/\n/g, '</p><p class="mb-6">') 
+                      }} 
+                      className="space-y-6"
+                    />
                   ) : (
-                    <>
-                      <p>
-                        {company.name} didirikan pada <strong>{company.establishedYear || '2003'}</strong> sebagai perusahaan yang bergerak dalam bidang kontraktor umum dengan fokus khusus pada pengadaan barang dan jasa konstruksi.
+                    <div className="space-y-6">
+                      <p className="text-lg leading-relaxed">
+                        <strong>{company.name}</strong> didirikan pada tahun <strong>{company.establishedYear || '2003'}</strong> sebagai perusahaan yang 
+                        bergerak dalam bidang kontraktor umum dengan fokus khusus pada pengadaan barang dan jasa konstruksi.
                       </p>
-                      <p>
-                        Perusahaan ini memiliki keahlian dalam {company.specialization || 'pembangunan dan konstruksi real estate, perencanaan dan pelaksanaan konstruksi gedung, jembatan, jalan, sistem pengairan dan irigasi, serta survey dan pemetaan'}.
+                      <p className="text-lg leading-relaxed">
+                        Perusahaan ini memiliki keahlian dalam pembangunan dan konstruksi real estate, perencanaan dan pelaksanaan konstruksi gedung, jembatan, jalan, sistem pengairan dan irigasi, serta survey dan pemetaan.
                       </p>
-                      <p>
+                      <p className="text-lg leading-relaxed">
                         Berkedudukan di {company.address ? company.address.split(',')[0] : 'Jakarta'} dengan jaringan cabang dan perwakilan di berbagai tempat, {company.name} berkomitmen untuk menghadirkan solusi konstruksi terbaik dengan dukungan karyawan yang unggul dan fokus pada kepuasan klien.
                       </p>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>

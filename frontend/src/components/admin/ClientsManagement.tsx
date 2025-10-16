@@ -276,54 +276,49 @@ const ClientsManagement = () => {
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center">
-              <Users className="h-8 w-8 text-construction-blue-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Klien</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : statistics?.total ?? 0}
+            <div className="flex items-center justify-center space-x-4">
+              <div className="flex-shrink-0">
+                <Users className="h-10 w-10 text-blue-600" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-600 mb-1">Total Klien</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {isLoading ? <Loader2 className="w-8 h-8 animate-spin mx-auto" /> : statistics?.total ?? 0}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
+        
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center">
-              <CheckCircle className="h-8 w-8 text-green-500" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Klien Aktif</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : statistics?.active ?? 0}
+            <div className="flex items-center justify-center space-x-4">
+              <div className="flex-shrink-0">
+                <CheckCircle className="h-10 w-10 text-green-600" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-600 mb-1">Klien Aktif</p>
+                <p className="text-3xl font-bold text-green-700">
+                  {isLoading ? <Loader2 className="w-8 h-8 animate-spin mx-auto" /> : statistics?.active ?? 0}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
+        
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center">
-              <AlertCircle className="h-8 w-8 text-red-500" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Klien Inaktif</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : statistics?.inactive ?? 0}
-                </p>
+            <div className="flex items-center justify-center space-x-4">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-10 w-10 text-red-600" />
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center">
-              <Star className="h-8 w-8 text-yellow-500" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Kategori Teratas</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : topCategory}
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-600 mb-1">Klien Inaktif</p>
+                <p className="text-3xl font-bold text-red-700">
+                  {isLoading ? <Loader2 className="w-8 h-8 animate-spin mx-auto" /> : statistics?.inactive ?? 0}
                 </p>
               </div>
             </div>

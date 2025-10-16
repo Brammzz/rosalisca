@@ -531,7 +531,8 @@ const CertificateManagement = () => {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="subsidiary" className="text-right">Perusahaan</Label>
+                <Label htmlFor="subsidiary" className="text-right">Perusahaan / 
+                  Anak Perusahaan</Label>
                 <Select 
                   value={newCertificate.subsidiary}
                   onValueChange={(value) => setNewCertificate({ ...newCertificate, subsidiary: value as any })}>

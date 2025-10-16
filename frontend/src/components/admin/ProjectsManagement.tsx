@@ -369,14 +369,15 @@ const ProjectsManagement = () => {
     );
   };
 
-// Helper function to get full image URL
-const getImageUrl = (imagePath: string) => {
-  if (!imagePath || imagePath === '') return '/placeholder.svg';
-  if (imagePath.startsWith('http')) return imagePath;
-  const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
-  if (imagePath.startsWith('/uploads')) return `${baseUrl}${imagePath}`;
-  return `${baseUrl}/uploads/projects/${imagePath}`;
-};  const getCategoryLabel = (category: string) => {
+  // Helper function to get full image URL
+  const getImageUrl = (imagePath: string) => {
+    if (!imagePath || imagePath === '') return '/placeholder.svg';
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('/uploads')) return `http://localhost:5000${imagePath}`;
+    return `http://localhost:5000/uploads/projects/${imagePath}`;
+  };
+
+  const getCategoryLabel = (category: string) => {
     const categoryLabels: { [key: string]: string } = {
       'general-contractor': 'General Contractor',
       'civil-engineering': 'Civil Engineering',
