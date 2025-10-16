@@ -1,6 +1,5 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -24,42 +23,25 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// CORS configuration - SIMPLIFIED for better compatibility
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+// Custom CORS middleware - Simple and effective
+app.use(function (req, res, next) {
+    // Log incoming requests for debugging
+    console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin || 'no-origin'}`);
     
-    const allowedOrigins = [
-      'http://localhost:5173', // Local development
-      'http://localhost:3000', // Alternative local port
-      'https://rosalisca.vercel.app', // Production frontend
-      'https://rosalisca-backend.vercel.app', // Production backend
-      process.env.FRONTEND_URL, // Dynamic frontend URL from env
-    ].filter(Boolean); // Remove undefined values
+    // Enabling CORS
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE,PATCH");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-client-key, x-client-token, x-client-secret, Authorization");
     
-    console.log(`CORS Check: origin=${origin}, allowed=${allowedOrigins.includes(origin)}`);
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      // For development, allow any localhost
-      if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
-        callback(null, true);
-      } else {
-        console.log('Blocked by CORS:', origin);
-        callback(null, true); // Allow all for now to avoid blocking
-      }
+    // Handle preflight OPTIONS request
+    if (req.method === 'OPTIONS') {
+        console.log('Handling OPTIONS preflight request for:', req.path);
+        res.status(200).end();
+        return;
     }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  optionsSuccessStatus: 200
-};
-
-// Middleware - USE ONLY ONE CORS SETUP
-app.use(cors(corsOptions));
+    
+    next();
+});
 app.use(express.json());
 app.use(cookieParser());
 
