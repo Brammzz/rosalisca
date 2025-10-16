@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { API_ENDPOINTS } from '../config/api';
 
-const API_URL = `${API_ENDPOINTS.contacts}/api/contacts`;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_URL = `${API_BASE_URL}/contacts`;
 
 // Types
 export interface Contact {

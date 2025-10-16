@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { API_ENDPOINTS, API_BASE_URL } from '../config/api';
 
-const API_URL = `${API_ENDPOINTS.certificates}/api/certificates`;
+const API_URL = 'http://localhost:5000/api/certificates';
 
 // Define the structure of the Certificate object, matching the backend model
 export interface Certificate {
@@ -248,5 +247,6 @@ export const getCertificateImageUrl = (imagePath: string): string => {
   }
   
   // If it's just a filename or relative path, construct the full URL
-  return `${API_BASE_URL}/uploads/certificates/${imagePath}`;
+  const baseUrl = 'http://localhost:5000';
+  return `${baseUrl}/uploads/certificates/${imagePath}`;
 };

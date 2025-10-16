@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { API_ENDPOINTS } from '../config/api';
 
-const API_URL = `${API_ENDPOINTS.projects}/api/projects`;
+const API_URL = 'http://localhost:5000/api/projects';
 
 interface GalleryImage {
   _id?: string;

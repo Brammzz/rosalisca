@@ -1,6 +1,4 @@
-import { API_ENDPOINTS } from '../config/api.ts';
-
-const API_URL = `${API_ENDPOINTS.careers}/api/careers`;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 class CareerService {
   // =================== PUBLIC API ===================
@@ -19,7 +17,7 @@ class CareerService {
       if (filters.search) params.append('search', filters.search);
       if (filters.featured) params.append('featured', 'true');
 
-      const response = await fetch(`${API_URL}/public/careers?${params}`);
+      const response = await fetch(`${API_BASE_URL}/careers/public/careers?${params}`);
       const data = await response.json();
       
       if (!response.ok) {

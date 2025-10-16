@@ -1,6 +1,4 @@
-import { API_ENDPOINTS } from '../config/api';
-
-const API_URL = `${API_ENDPOINTS.companies}/api/companies`;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Helper function untuk get auth headers
 const getAuthHeaders = (): HeadersInit => {
@@ -106,7 +104,7 @@ export const getCompanies = async (filters: CompanyFilters = {}): Promise<Compan
       }
     });
 
-    const response = await fetch(`${API_URL}?${params}`);
+    const response = await fetch(`${API_BASE_URL}/companies?${params}`);
     const data = await response.json();
     
     if (!response.ok) {
@@ -122,7 +120,7 @@ export const getCompanies = async (filters: CompanyFilters = {}): Promise<Compan
 
 export const getCompanyById = async (id: string): Promise<SingleCompanyResponse> => {
   try {
-    const response = await fetch(`${API_URL}/${id}`);
+    const response = await fetch(`${API_BASE_URL}/companies/${id}`);
     const data = await response.json();
     
     if (!response.ok) {
@@ -138,7 +136,7 @@ export const getCompanyById = async (id: string): Promise<SingleCompanyResponse>
 
 export const getCompanyBySlug = async (slug: string): Promise<SingleCompanyResponse> => {
   try {
-    const response = await fetch(`${API_URL}/slug/${slug}`);
+    const response = await fetch(`${API_BASE_URL}/companies/slug/${slug}`);
     const data = await response.json();
     
     if (!response.ok) {
@@ -154,7 +152,7 @@ export const getCompanyBySlug = async (slug: string): Promise<SingleCompanyRespo
 
 export const getParentCompany = async (): Promise<SingleCompanyResponse> => {
   try {
-    const response = await fetch(`${API_URL}/parent`);
+    const response = await fetch(`${API_BASE_URL}/companies/parent`);
     const data = await response.json();
     
     if (!response.ok) {
@@ -170,7 +168,7 @@ export const getParentCompany = async (): Promise<SingleCompanyResponse> => {
 
 export const getSubsidiaries = async (): Promise<CompanyResponse> => {
   try {
-    const response = await fetch(`${API_URL}/subsidiaries`);
+    const response = await fetch(`${API_BASE_URL}/companies/subsidiaries`);
     const data = await response.json();
     
     if (!response.ok) {
@@ -186,7 +184,7 @@ export const getSubsidiaries = async (): Promise<CompanyResponse> => {
 
 export const getCompanyStats = async (): Promise<CompanyStatsResponse> => {
   try {
-    const response = await fetch(`${API_URL}/stats`);
+    const response = await fetch(`${API_BASE_URL}/companies/stats`);
     const data = await response.json();
     
     if (!response.ok) {
@@ -221,7 +219,7 @@ export const createCompany = async (companyData: Partial<Company>, logoFile?: Fi
       formData.append('logo', logoFile);
     }
 
-    const response = await fetch(`${API_URL}`, {
+    const response = await fetch(`${API_BASE_URL}/companies`, {
       method: 'POST',
       headers: getAuthHeadersMultipart(),
       body: formData
@@ -260,7 +258,7 @@ export const updateCompany = async (id: string, companyData: Partial<Company>, l
       formData.append('logo', logoFile);
     }
 
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/companies/${id}`, {
       method: 'PUT',
       headers: getAuthHeadersMultipart(),
       body: formData
@@ -281,7 +279,7 @@ export const updateCompany = async (id: string, companyData: Partial<Company>, l
 
 export const deleteCompany = async (id: string): Promise<{ success: boolean; message: string }> => {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/companies/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
     });
@@ -301,7 +299,7 @@ export const deleteCompany = async (id: string): Promise<{ success: boolean; mes
 
 export const updateCompanyStatus = async (id: string, isActive: boolean): Promise<SingleCompanyResponse> => {
   try {
-    const response = await fetch(`${API_URL}/${id}/status`, {
+    const response = await fetch(`${API_BASE_URL}/companies/${id}/status`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
       body: JSON.stringify({ isActive })
@@ -322,7 +320,7 @@ export const updateCompanyStatus = async (id: string, isActive: boolean): Promis
 
 export const updateSortOrder = async (companies: Array<{ id: string; sortOrder: number }>): Promise<{ success: boolean; message: string }> => {
   try {
-    const response = await fetch(`${API_URL}/sort-order`, {
+    const response = await fetch(`${API_BASE_URL}/companies/sort-order`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
       body: JSON.stringify({ companies })
