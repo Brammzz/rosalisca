@@ -4,26 +4,37 @@ import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
+import { generatePlaceholderImage } from '../utils/uploadUtils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Multer config for certificate images
-const storage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../../uploads/certificates');
-    try {
-      await fs.mkdir(uploadPath, { recursive: true });
-      cb(null, uploadPath);
-    } catch (error) {
-      cb(error);
+// Check if running in production/Vercel
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+
+let storage;
+
+if (isProduction) {
+  // Use memory storage in production
+  storage = multer.memoryStorage();
+} else {
+  // Use disk storage in development
+  storage = multer.diskStorage({
+    destination: async (req, file, cb) => {
+      const uploadPath = path.join(__dirname, '../../uploads/certificates');
+      try {
+        await fs.mkdir(uploadPath, { recursive: true });
+        cb(null, uploadPath);
+      } catch (error) {
+        cb(error);
+      }
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, `certificate-${uniqueSuffix}${path.extname(file.originalname)}`);
     }
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, `certificate-${uniqueSuffix}${path.extname(file.originalname)}`);
-  }
-});
+  });
+}
 
 const upload = multer({
   storage,
@@ -146,7 +157,7 @@ const createCertificate = asyncHandler(async (req, res) => {
     title,
     description,
     type,
-    image: `/uploads/certificates/${req.file.filename}`,
+    image: isProduction ? generatePlaceholderImage('certificate') : `/uploads/certificates/${req.file.filename}`,
     issuer,
     issueDate: issueDate ? new Date(issueDate) : undefined,
     expiryDate: expiryDate ? new Date(expiryDate) : undefined,
@@ -184,7 +195,7 @@ const updateCertificate = asyncHandler(async (req, res) => {
     if (certificate.image) {
       await deleteFile(certificate.image);
     }
-    imagePath = `/uploads/certificates/${req.file.filename}`;
+    imagePath = isProduction ? generatePlaceholderImage('certificate') : `/uploads/certificates/${req.file.filename}`;
   }
 
   // Update fields

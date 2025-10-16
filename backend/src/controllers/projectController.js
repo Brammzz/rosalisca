@@ -4,26 +4,37 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
+import { generatePlaceholderImage, isLocalUpload, getProductionImageUrl } from '../utils/uploadUtils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Konfigurasi multer untuk upload gambar
-const storage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../../uploads/projects');
-    try {
-      await fs.mkdir(uploadPath, { recursive: true });
-      cb(null, uploadPath);
-    } catch (error) {
-      cb(error);
+// Check if running in production/Vercel
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+
+let storage;
+
+if (isProduction) {
+  // Use memory storage in production
+  storage = multer.memoryStorage();
+} else {
+  // Use disk storage in development
+  storage = multer.diskStorage({
+    destination: async (req, file, cb) => {
+      const uploadPath = path.join(__dirname, '../../uploads/projects');
+      try {
+        await fs.mkdir(uploadPath, { recursive: true });
+        cb(null, uploadPath);
+      } catch (error) {
+        cb(error);
+      }
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, `project-${uniqueSuffix}${path.extname(file.originalname)}`);
     }
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, `project-${uniqueSuffix}${path.extname(file.originalname)}`);
-  }
-});
+  });
+}
 
 const upload = multer({
   storage,
@@ -91,13 +102,18 @@ const createProject = asyncHandler(async (req, res) => {
 
   // Handle main image upload
   if (req.files && req.files.mainImage) {
-    mainImageUrl = `/uploads/projects/${req.files.mainImage[0].filename}`;
+    if (isProduction) {
+      // In production, use placeholder image
+      mainImageUrl = generatePlaceholderImage('project');
+    } else {
+      mainImageUrl = `/uploads/projects/${req.files.mainImage[0].filename}`;
+    }
   }
 
   // Handle gallery images upload
   if (req.files && req.files.galleryImages) {
     galleryImages = req.files.galleryImages.map((file, index) => ({
-      url: `/uploads/projects/${file.filename}`,
+      url: isProduction ? generatePlaceholderImage('project') : `/uploads/projects/${file.filename}`,
       caption: req.body[`galleryCaption_${index}`] || '',
       isPrimary: false
     }));
