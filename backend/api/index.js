@@ -3,15 +3,15 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import connectDB from '../src/config/db.js';
-import authRoutes from '../src/routes/authRoutes.js';
-import adminRoutes from '../src/routes/adminRoutes.js';
-import projectRoutes from '../src/routes/projectRoutes.js';
-import clientRoutes from '../src/routes/clientRoutes.js';
-import contactRoutes from '../src/routes/contactRoutes.js';
-import careerRoutes from '../src/routes/careerRoutes.js';
-import certificateRoutes from '../src/routes/certificateRoutes.js';
-import companyRoutes from '../src/routes/companyRoutes.js';
+import connectDB from './src/config/db.js';
+import authRoutes from './src/routes/authRoutes.js';
+import adminRoutes from './src/routes/adminRoutes.js';
+import projectRoutes from './src/routes/projectRoutes.js';
+import clientRoutes from './src/routes/clientRoutes.js';
+import contactRoutes from './src/routes/contactRoutes.js';
+import careerRoutes from './src/routes/careerRoutes.js';
+import certificateRoutes from './src/routes/certificateRoutes.js';
+import companyRoutes from './src/routes/companyRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -22,6 +22,41 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Custom CORS middleware to set additional headers
+const customCors = (req, res, next) => {
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://rosalisca.vercel.app',
+    'https://rosalisca-backend.vercel.app'
+  ];
+  
+  const origin = req.headers.origin;
+  
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  
+  // Set specific origin or allow all for development
+  if (allowedOrigins.includes(origin) || !origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', 'https://rosalisca.vercel.app');
+  }
+  
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
+  );
+
+  // Handle preflight request (OPTIONS)
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+};
+
 // CORS configuration for production
 const corsOptions = {
   origin: function (origin, callback) {
@@ -29,14 +64,15 @@ const corsOptions = {
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'https://rosalisca.vercel.app',
-      'https://rosalisca-backend.vercel.app',
-      process.env.FRONTEND_URL,
+      'http://localhost:5173', // Local development
+      'http://localhost:3000', // Alternative local port
+      'https://rosalisca.vercel.app', // Production frontend
+      'https://rosalisca-backend.vercel.app', // Production backend
+      process.env.FRONTEND_URL, // Dynamic frontend URL from env
+      // Add your custom domain here
       'https://rosalisca.com',
       'https://www.rosalisca.com'
-    ].filter(Boolean);
+    ].filter(Boolean); // Remove undefined values
     
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -48,26 +84,23 @@ const corsOptions = {
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
 // Middleware
+app.use(customCors); // Apply custom CORS first
 app.use(cors(corsOptions));
 app.use(express.json());
 
 // Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+console.log('Registering API routes...');
 // Routes
 app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Rosalisca API is running...',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
+  res.send('API is running...');
 });
 
-// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/projects', projectRoutes);
@@ -77,29 +110,51 @@ app.use('/api/careers', careerRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/companies', companyRoutes);
 
-// Initialize database connection
-let isConnected = false;
+// Global error handler for CORS issues
+app.use((err, req, res, next) => {
+  if (err && err.message && err.message.includes('CORS')) {
+    res.status(200).json({ error: 'CORS Error', message: err.message });
+  } else {
+    next(err);
+  }
+});
 
-const connectToDatabase = async () => {
-  if (!isConnected) {
-    try {
-      await connectDB();
-      isConnected = true;
-      console.log('Database connected successfully');
-    } catch (error) {
-      console.error('Database connection failed:', error);
-      throw error;
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({ 
+    message: 'Route not found',
+    availableRoutes: [
+      '/api/auth',
+      '/api/admin', 
+      '/api/projects',
+      '/api/clients',
+      '/api/contacts',
+      '/api/careers',
+      '/api/certificates',
+      '/api/companies'
+    ]
+  });
+});
+
+const PORT = process.env.PORT || 5000;
+
+const startServer = async () => {
+  try {
+    await connectDB();
+    
+    // Only start listening in development (not in Vercel)
+    if (process.env.NODE_ENV !== 'production') {
+      app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    }
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
     }
   }
 };
 
-// Serverless function handler
-export default async (req, res) => {
-  try {
-    await connectToDatabase();
-    return app(req, res);
-  } catch (error) {
-    console.error('Error in serverless function:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
+startServer();
+
+// Export the app for Vercel
+export default app;
