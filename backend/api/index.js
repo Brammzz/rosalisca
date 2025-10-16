@@ -124,6 +124,32 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Environment check endpoint
+app.get('/api/env-check', (req, res) => {
+  res.json({
+    status: 'Environment Check',
+    database: dbConnected ? 'connected' : 'disconnected',
+    environment: {
+      NODE_ENV: process.env.NODE_ENV || 'development',
+      MONGODB_URI: process.env.MONGODB_URI ? '✅ configured' : '❌ missing',
+      JWT_SECRET: process.env.JWT_SECRET ? '✅ configured' : '❌ missing',
+      FRONTEND_URL: process.env.FRONTEND_URL || 'not set',
+      PORT: process.env.PORT || '3000'
+    },
+    routes_available: [
+      '/api/auth/login',
+      '/api/auth/register', 
+      '/api/projects',
+      '/api/clients',
+      '/api/contacts',
+      '/api/careers',
+      '/api/certificates',
+      '/api/companies'
+    ],
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.get('/api/debug', (req, res) => {
   res.json({ 
     message: 'Debug endpoint working',
@@ -135,6 +161,44 @@ app.get('/api/debug', (req, res) => {
     },
     environment: process.env.NODE_ENV,
     timestamp: new Date().toISOString()
+  });
+});
+
+// List all available routes
+app.get('/api/routes', (req, res) => {
+  const routes = [
+    { method: 'GET', path: '/', description: 'API info' },
+    { method: 'GET', path: '/health', description: 'Health check' },
+    { method: 'GET', path: '/api/env-check', description: 'Environment variables check' },
+    { method: 'GET', path: '/api/debug', description: 'Debug information' },
+    { method: 'GET', path: '/api/routes', description: 'List all routes' },
+    { method: 'POST', path: '/api/auth/login', description: 'User login' },
+    { method: 'POST', path: '/api/auth/register', description: 'User registration' },
+    { method: 'GET', path: '/api/projects', description: 'Get all projects' },
+    { method: 'POST', path: '/api/projects', description: 'Create new project' },
+    { method: 'GET', path: '/api/clients', description: 'Get all clients' },
+    { method: 'POST', path: '/api/clients', description: 'Create new client' },
+    { method: 'GET', path: '/api/contacts', description: 'Get all contacts' },
+    { method: 'POST', path: '/api/contacts', description: 'Create new contact' },
+    { method: 'GET', path: '/api/careers', description: 'Get all careers' },
+    { method: 'POST', path: '/api/careers', description: 'Create new career' },
+    { method: 'GET', path: '/api/certificates', description: 'Get all certificates' },
+    { method: 'POST', path: '/api/certificates', description: 'Create new certificate' },
+    { method: 'GET', path: '/api/companies', description: 'Get all companies' },
+    { method: 'POST', path: '/api/companies', description: 'Create new company' }
+  ];
+
+  res.json({
+    message: 'Available API Routes',
+    baseUrl: req.protocol + '://' + req.get('host'),
+    totalRoutes: routes.length,
+    routes: routes,
+    note: 'All POST requests require appropriate authentication and data',
+    adminCredentials: {
+      email: 'admin@gmail.com',
+      password: 'admin123',
+      note: 'Default admin account (auto-created)'
+    }
   });
 });
 
@@ -185,14 +249,47 @@ let dbConnected = false;
 const initDB = async () => {
   if (!dbConnected) {
     try {
-      console.log('Connecting to database...');
+      console.log('🔄 Connecting to database...');
       await connectDB();
       dbConnected = true;
-      console.log('Database connected successfully');
+      console.log('✅ Database connected successfully');
+      
+      // Auto-create admin user if not exists
+      await createDefaultAdmin();
     } catch (error) {
-      console.error('Database connection failed:', error);
+      console.error('❌ Database connection failed:', error);
       throw error;
     }
+  }
+};
+
+// Function to create default admin user
+const createDefaultAdmin = async () => {
+  try {
+    const User = (await import('../src/models/User.js')).default;
+    
+    const adminEmail = 'admin@gmail.com';
+    const existingAdmin = await User.findOne({ email: adminEmail });
+    
+    if (!existingAdmin) {
+      const bcrypt = (await import('bcryptjs')).default;
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('admin123', salt);
+      
+      const admin = new User({
+        email: adminEmail,
+        password: hashedPassword,
+        role: 'admin'
+      });
+      
+      await admin.save();
+      console.log('✅ Default admin user created:', adminEmail);
+    } else {
+      console.log('ℹ️ Admin user already exists:', adminEmail);
+    }
+  } catch (error) {
+    console.error('❌ Error creating admin user:', error);
+    // Don't throw error, just log it
   }
 };
 
