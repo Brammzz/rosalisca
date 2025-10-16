@@ -2,6 +2,8 @@ import React from 'react';
 import { Award, FileText, Calendar, Building } from 'lucide-react';
 import { Certificate, getTypeLabel } from '@/services/certificateService';
 
+import { getCertificateImageUrl } from '@/utils/apiUtils';
+
 interface CertificateCardProps {
   certificate: Certificate;
   onClick: () => void;
@@ -10,10 +12,7 @@ interface CertificateCardProps {
 const CertificateCard: React.FC<CertificateCardProps> = ({ certificate, onClick }) => {
   // Helper function to get image URL, similar to ProjectCard
   const getImageUrl = (imagePath: string) => {
-    if (!imagePath) return '/images/placeholder-certificate.jpg';
-    if (imagePath.startsWith('http')) return imagePath;
-    if (imagePath.startsWith('/uploads')) return `http://localhost:5000${imagePath}`;
-    return `http://localhost:5000/uploads/certificates/${imagePath}`;
+    return getCertificateImageUrl(imagePath);
   };
 
   return (

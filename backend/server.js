@@ -31,21 +31,35 @@ const app = express();
 
 // CORS configuration for production
 const corsOptions = {
-  origin: [
-    'http://localhost:5173', // Local development
-    'https://rosalisca-frontend.vercel.app',
-    'https://rosalisca.vercel.app', // Add the actual frontend domain
-    'https://*.vercel.app', // Allow all Vercel subdomains
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:5173', // Local development
+      'https://rosalisca-frontend.vercel.app',
+      'https://rosalisca.vercel.app', // Production frontend
+    ];
+    
+    // Check if origin is in allowed list or is a Vercel app
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'), false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+  optionsSuccessStatus: 200
 };
 
 // Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

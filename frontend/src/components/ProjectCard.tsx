@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, Building, CheckCircle, Users } from 'lucide-react';
 import { Project } from '@/services/projectService';
 
+import { getProjectImageUrl } from '@/utils/apiUtils';
+
 interface ProjectCardProps {
   project: Project;
   detailPath: string;
@@ -33,14 +35,10 @@ const getStatusComponent = (status: string) => {
 };
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, detailPath }) => {
-  // Helper function to get image URL
-  const getImageUrl = (imagePath: string) => {
-    if (!imagePath) return '';
-    if (imagePath.startsWith('http')) return imagePath;
-    return `http://localhost:5000${imagePath}`;
-  };
-
-  return (
+// Helper function to get full image URL
+const getImageUrl = (imagePath: string) => {
+  return getProjectImageUrl(imagePath);
+};  return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
       <div className="relative overflow-hidden">
         <div className="w-full h-64 overflow-hidden">
