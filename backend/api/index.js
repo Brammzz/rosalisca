@@ -23,6 +23,9 @@ const app = express();
 
 // Custom CORS middleware to set additional headers
 const customCors = (req, res, next) => {
+  const origin = req.headers.origin;
+  
+  // Define allowed origins patterns
   const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
@@ -30,9 +33,13 @@ const customCors = (req, res, next) => {
     'https://rosalisca-backend.vercel.app'
   ];
   
-  const origin = req.headers.origin;
+  // Check if origin matches Vercel deployment pattern
+  const isVercelDeployment = origin && (
+    origin.includes('rosalisca') && 
+    origin.includes('vercel.app')
+  );
   
-  // Always set these headers
+  // Always set these headers first
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
@@ -40,13 +47,25 @@ const customCors = (req, res, next) => {
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
   );
 
-  // Set origin header
+  // Debug logging
+  console.log('CORS Request - Origin:', origin);
+  console.log('CORS Request - Method:', req.method);
+
+  // Set origin header with broader matching for Vercel deployments
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
+    console.log('CORS: Allowed origin (exact match):', origin);
+  } else if (isVercelDeployment) {
+    // Allow any Vercel deployment URL that contains 'rosalisca'
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    console.log('CORS: Allowed origin (Vercel deployment):', origin);
   } else if (!origin) {
     res.setHeader('Access-Control-Allow-Origin', '*');
+    console.log('CORS: No origin, allowing all');
   } else {
-    res.setHeader('Access-Control-Allow-Origin', 'https://rosalisca.vercel.app');
+    // Fallback to main production URL
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    console.log('CORS: Fallback to wildcard for origin:', origin);
   }
 
   // Handle preflight request (OPTIONS)
@@ -60,6 +79,22 @@ const customCors = (req, res, next) => {
 
 // Middleware
 app.use(customCors); // Apply custom CORS first
+
+// Additional middleware to ensure CORS headers are always present
+app.use((req, res, next) => {
+  // Ensure CORS headers are always set, even if custom CORS fails
+  if (!res.getHeader('Access-Control-Allow-Origin')) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  if (!res.getHeader('Access-Control-Allow-Methods')) {
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  }
+  if (!res.getHeader('Access-Control-Allow-Headers')) {
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
+  next();
+});
+
 app.use(express.json());
 
 // Serve static files from uploads directory

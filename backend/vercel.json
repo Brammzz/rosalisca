@@ -9,17 +9,28 @@
   "routes": [
     {
       "src": "/api/test",
-      "dest": "/api/test.js"
+      "dest": "/api/test.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      }
     },
     {
       "src": "/uploads/(.*)",
       "headers": {
-        "cache-control": "s-maxage=86400"
+        "cache-control": "s-maxage=86400",
+        "Access-Control-Allow-Origin": "*"
       }
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.js"
+      "dest": "/api/index.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+      }
     }
   ]
 }
