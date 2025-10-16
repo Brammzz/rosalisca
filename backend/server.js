@@ -22,85 +22,17 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// CORS configuration for production
-const corsOptions = {
-  origin: function (origin, callback) {
-    console.log('CORS Origin Request:', origin);
-    
-    // Allow requests with no origin (like mobile apps, curl, Postman)
-    if (!origin) {
-      console.log('No origin - allowing');
-      return callback(null, true);
-    }
-    
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'http://localhost:8080',
-      'https://rosalisca.vercel.app',
-      'https://rosalisca-frontend.vercel.app',
-      process.env.FRONTEND_URL
-    ].filter(Boolean);
-    
-    console.log('Allowed origins:', allowedOrigins);
-    
-    if (allowedOrigins.includes(origin)) {
-      console.log('Origin allowed:', origin);
-      callback(null, true);
-    } else {
-      console.log('Origin blocked by CORS:', origin);
-      // In production, we might want to allow unknown origins for now
-      if (process.env.NODE_ENV === 'production') {
-        console.log('Production mode - allowing origin');
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  optionsSuccessStatus: 200,
-  preflightContinue: false
-};
-
-// Middleware
-app.use(cors(corsOptions));
-
-// Additional CORS headers for preflight requests
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    console.log('Preflight request for:', req.url);
-    return res.status(200).end();
-  }
-  
-  next();
-});
+// Simple CORS configuration like in the attachment
+app.use(cors({ origin: 'https://rosalisca.vercel.app' }));
 
 app.use(express.json());
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-console.log('Registering API routes...');
-
-// Debug middleware
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`);
-  next();
-});
-
 // Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Rosalisca API is running...', timestamp: new Date().toISOString() });
+  res.json({ message: 'Rosalisca API is running!' });
 });
 
 app.use('/api/auth', authRoutes);
