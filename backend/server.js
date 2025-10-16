@@ -22,6 +22,41 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Custom CORS middleware to set additional headers
+const customCors = (req, res, next) => {
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://rosalisca.vercel.app',
+    'https://rosalisca-backend.vercel.app'
+  ];
+  
+  const origin = req.headers.origin;
+  
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  
+  // Set specific origin or allow all for development
+  if (allowedOrigins.includes(origin) || !origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', 'https://rosalisca.vercel.app');
+  }
+  
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
+  );
+
+  // Handle preflight request (OPTIONS)
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+};
+
 // CORS configuration for production
 const corsOptions = {
   origin: function (origin, callback) {
@@ -53,6 +88,7 @@ const corsOptions = {
 };
 
 // Middleware
+app.use(customCors); // Apply custom CORS first
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -73,6 +109,32 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/careers', careerRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/companies', companyRoutes);
+
+// Global error handler for CORS issues
+app.use((err, req, res, next) => {
+  if (err && err.message && err.message.includes('CORS')) {
+    res.status(200).json({ error: 'CORS Error', message: err.message });
+  } else {
+    next(err);
+  }
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({ 
+    message: 'Route not found',
+    availableRoutes: [
+      '/api/auth',
+      '/api/admin', 
+      '/api/projects',
+      '/api/clients',
+      '/api/contacts',
+      '/api/careers',
+      '/api/certificates',
+      '/api/companies'
+    ]
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 
