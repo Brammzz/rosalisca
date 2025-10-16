@@ -12,7 +12,6 @@ import contactRoutes from './src/routes/contactRoutes.js';
 import careerRoutes from './src/routes/careerRoutes.js';
 import certificateRoutes from './src/routes/certificateRoutes.js';
 import companyRoutes from './src/routes/companyRoutes.js';
-import dashboardRoutes from './src/routes/dashboardRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -23,8 +22,38 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// CORS configuration for production
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:5173', // Local development
+      'http://localhost:3000', // Alternative local port
+      'https://rosalisca.vercel.app', // Production frontend
+      'https://rosalisca-backend.vercel.app', // Production backend
+      process.env.FRONTEND_URL, // Dynamic frontend URL from env
+      // Add your custom domain here
+      'https://rosalisca.com',
+      'https://www.rosalisca.com'
+    ].filter(Boolean); // Remove undefined values
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('Blocked by CORS:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Serve static files from uploads directory
@@ -44,7 +73,6 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/careers', careerRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/companies', companyRoutes);
-app.use('/api/dashboard', dashboardRoutes);
 
 const PORT = process.env.PORT || 5000;
 

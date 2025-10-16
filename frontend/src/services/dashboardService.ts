@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/dashboard';
+const API_URL = `${import.meta.env.VITE_API_URL}/dashboard`;
 
 // Create axios instance with auth token
 const createAuthHeaders = () => {

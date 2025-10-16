@@ -6,6 +6,12 @@ Sebuah aplikasi web full-stack untuk PT. Rosa Lisca Group yang menampilkan profi
 
 PT. Rosa Lisca Group adalah perusahaan konstruksi yang bergerak di bidang General Contractor, Civil Engineering, Supplier, Microtunnelling, dan Sistem Drainase. Website ini dikembangkan untuk meningkatkan presence digital perusahaan dan menyediakan platform manajemen internal yang komprehensif.
 
+## 🌐 Live Demo
+
+- **🌍 Website Publik**: [https://rosalisca.vercel.app](https://rosalisca.vercel.app)
+- **⚙️ API Backend**: [https://rosalisca-backend.vercel.app](https://rosalisca-backend.vercel.app)
+- **🔐 Admin Panel**: [https://rosalisca.vercel.app/admin](https://rosalisca.vercel.app/admin)
+
 ## 🚀 Fitur Utama
 
 ### Frontend (Website Publik)
@@ -264,17 +270,48 @@ Website fully responsive dengan support untuk:
 
 ## 🚀 Deployment
 
-### Backend Deployment
+## 🚀 Deployment
 
-1. Setup production MongoDB
-2. Configure environment variables
-3. Build dan deploy ke hosting (Heroku, DigitalOcean, etc.)
+### Vercel Deployment (Recommended)
 
-### Frontend Deployment
+Proyek ini sudah dikonfigurasi untuk deployment mudah ke Vercel:
 
-1. Build production: `npm run build`
-2. Deploy dist folder ke hosting (Netlify, Vercel, etc.)
-3. Configure API URL untuk production
+#### Backend Deployment
+
+1. Deploy backend ke Vercel dari folder `backend/`
+2. Set environment variables di Vercel dashboard:
+   ```
+   NODE_ENV=production
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/rosalisca
+   JWT_SECRET=your_jwt_secret_here
+   FRONTEND_URL=https://rosalisca.vercel.app
+   ```
+
+#### Frontend Deployment
+
+1. Update `frontend/.env.production` dengan backend URL
+2. Deploy frontend ke Vercel dari folder `frontend/`
+3. Set environment variables:
+   ```
+   VITE_API_URL=https://rosalisca-backend.vercel.app/api
+   ```
+
+📖 **Untuk panduan deployment lengkap, lihat [DEPLOYMENT-GUIDE.md](./DEPLOYMENT-GUIDE.md)**
+
+### Production Deployment
+
+```bash
+# Backend
+cd backend
+npm install
+npm start
+
+# Frontend
+cd frontend
+npm install
+npm run build:production
+npm run preview
+```
 
 ## 🧪 Testing
 

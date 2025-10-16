@@ -37,7 +37,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, detailPath }) => {
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return '';
     if (imagePath.startsWith('http')) return imagePath;
-    return `http://localhost:5000${imagePath}`;
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+    return `${baseUrl}${imagePath}`;
   };
 
   return (

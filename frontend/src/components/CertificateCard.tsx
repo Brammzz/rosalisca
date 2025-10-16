@@ -12,8 +12,9 @@ const CertificateCard: React.FC<CertificateCardProps> = ({ certificate, onClick 
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return '/images/placeholder-certificate.jpg';
     if (imagePath.startsWith('http')) return imagePath;
-    if (imagePath.startsWith('/uploads')) return `http://localhost:5000${imagePath}`;
-    return `http://localhost:5000/uploads/certificates/${imagePath}`;
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+    if (imagePath.startsWith('/uploads')) return `${baseUrl}${imagePath}`;
+    return `${baseUrl}/uploads/certificates/${imagePath}`;
   };
 
   return (
