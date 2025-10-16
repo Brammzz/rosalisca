@@ -100,7 +100,46 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 console.log('Registering API routes...');
 // Routes
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  res.json({ 
+    message: 'Rosalisca API is running from server.js!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    routes: ['/api/auth', '/api/projects', '/api/clients', '/api/contacts', '/api/careers', '/api/certificates', '/api/companies']
+  });
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// Environment check endpoint
+app.get('/api/env-check', (req, res) => {
+  res.json({
+    status: 'Environment Check',
+    environment: {
+      NODE_ENV: process.env.NODE_ENV || 'development',
+      MONGODB_URI: process.env.MONGODB_URI ? '✅ configured' : '❌ missing',
+      JWT_SECRET: process.env.JWT_SECRET ? '✅ configured' : '❌ missing',
+      FRONTEND_URL: process.env.FRONTEND_URL || 'not set',
+      PORT: process.env.PORT || '5000'
+    },
+    routes_available: [
+      '/api/auth/login',
+      '/api/auth/register', 
+      '/api/projects',
+      '/api/clients',
+      '/api/contacts',
+      '/api/careers',
+      '/api/certificates',
+      '/api/companies'
+    ],
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.use('/api/auth', authRoutes);
@@ -142,17 +181,52 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
+    console.log('🔄 Connecting to database...');
     await connectDB();
+    console.log('✅ Database connected successfully');
+    
+    // Auto-create admin user if not exists
+    await createDefaultAdmin();
     
     // Only start listening in development (not in Vercel)
     if (process.env.NODE_ENV !== 'production') {
       app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
     }
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error('❌ Failed to start server:', error);
     if (process.env.NODE_ENV !== 'production') {
       process.exit(1);
     }
+  }
+};
+
+// Function to create default admin user
+const createDefaultAdmin = async () => {
+  try {
+    const User = (await import('./src/models/User.js')).default;
+    
+    const adminEmail = 'admin@gmail.com';
+    const existingAdmin = await User.findOne({ email: adminEmail });
+    
+    if (!existingAdmin) {
+      const bcrypt = (await import('bcryptjs')).default;
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('admin123', salt);
+      
+      const admin = new User({
+        email: adminEmail,
+        password: hashedPassword,
+        role: 'admin'
+      });
+      
+      await admin.save();
+      console.log('✅ Default admin user created:', adminEmail);
+    } else {
+      console.log('ℹ️ Admin user already exists:', adminEmail);
+    }
+  } catch (error) {
+    console.error('❌ Error creating admin user:', error);
+    // Don't throw error, just log it
   }
 };
 
