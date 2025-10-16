@@ -82,10 +82,6 @@ Thumbs.db
 
 # Vercel
 .vercel
-*.log
 
 # TypeScript
 *.tsbuildinfo
-
-# Deployment logs
-deployment-*.log

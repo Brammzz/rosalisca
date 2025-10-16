@@ -17,58 +17,47 @@ const deleteOldLogo = (logoPath) => {
 // @route   GET /api/clients
 // @access  Public
 const getClients = asyncHandler(async (req, res) => {
-  try {
-    const { category, search, status, limit } = req.query;
+  const { category, search, status } = req.query;
 
-    // Build filter object
-    let filter = {};
-    
-    if (category && category !== 'all') {
-      filter.category = category;
-    }
-    
-    if (status && status !== 'all') {
-      filter.status = status;
-    }
+  // Build filter object
+  let filter = {};
+  
+  if (category && category !== 'all') {
+    filter.category = category;
+  }
+  
+  if (status && status !== 'all') {
+    filter.status = status;
+  }
 
-    // Search functionality
-    if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { industry: { $regex: search, $options: 'i' } }
-      ];
-    }
+  // Search functionality
+  if (search) {
+    filter.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
+      { industry: { $regex: search, $options: 'i' } }
+    ];
+  }
 
-    console.log('Client query filter:', filter);
-    console.log('Client query limit:', limit);
+  const clients = await Client.find(filter)
+    .sort({ createdAt: -1 });
 
-    let query = Client.find(filter).sort({ createdAt: -1 });
-    
-    // Apply limit if provided
-    if (limit && !isNaN(parseInt(limit))) {
-      query = query.limit(parseInt(limit));
-    }
+  const total = await Client.countDocuments(filter);
 
-    const clients = await query;
-    console.log('Found clients:', clients.length);
-
-    const total = await Client.countDocuments(filter);
-
-    // Get statistics
-    const stats = await Client.aggregate([
-      { $match: { status: 'active' } },
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 },
-          totalProjects: { $sum: '$projectCount' }
-        }
+  // Get statistics
+  const stats = await Client.aggregate([
+    { $match: { status: 'active' } },
+    {
+      $group: {
+        _id: '$category',
+        count: { $sum: 1 },
+        totalProjects: { $sum: '$projectCount' }
       }
-    ]);
+    }
+  ]);
 
-    const statisticsObj = {
-      total: await Client.countDocuments({ status: 'active' }),
+  const statisticsObj = {
+    total: await Client.countDocuments({ status: 'active' }),
     government: stats.find(s => s._id === 'government')?.count || 0,
     private: stats.find(s => s._id === 'private')?.count || 0,
     bumn: stats.find(s => s._id === 'state-owned')?.count || 0,
@@ -78,40 +67,15 @@ const getClients = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    data: clients || [], // Ensure data is always an array
+    data: clients,
     pagination: {
       page: 1,
-      limit: clients?.length || 0,
+      limit: total,
       total,
       pages: 1
     },
     statistics: statisticsObj
   });
-
-  } catch (error) {
-    console.error('Error in getClients:', error);
-    res.status(500).json({
-      success: false,
-      data: [], // Always return empty array on error
-      message: 'Error fetching clients',
-      error: error.message,
-      pagination: {
-        page: 1,
-        limit: 0,
-        total: 0,
-        pages: 0
-      },
-      statistics: {
-        total: 0,
-        government: 0,
-        private: 0,
-        bumn: 0,
-        stateOwned: 0,
-        international: 0,
-        totalProjects: 0
-      }
-    });
-  }
 });
 
 // @desc    Get a single client by ID

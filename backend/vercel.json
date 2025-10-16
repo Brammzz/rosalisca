@@ -1,27 +1,35 @@
 {
   "version": 2,
+  "name": "rosalisca-backend",
   "builds": [
     {
-      "src": "/api/index.js",
-      "use": "@vercel/node"
+      "src": "server.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "src/**",
+          "uploads/**"
+        ]
+      }
     }
   ],
   "routes": [
     {
       "src": "/uploads/(.*)",
-      "headers": {
-        "cache-control": "s-maxage=86400",
-        "Access-Control-Allow-Origin": "*"
-      }
+      "dest": "/uploads/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.js",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, X-CSRF-Token, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version"
-      }
+      "dest": "/server.js"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "functions": {
+    "server.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
+    }
+  }
 }

@@ -32,16 +32,7 @@ export const getProjectsAPI = async (company?: string): Promise<Project[]> => {
     params: company ? { company } : {},
   };
   const response = await axios.get(API_URL, config);
-  
-  // Handle both old format (direct array) and new format (wrapped object)
-  if (response.data && typeof response.data === 'object' && response.data.data) {
-    return response.data.data; // New format with wrapper
-  } else if (Array.isArray(response.data)) {
-    return response.data; // Old format (direct array)
-  } else {
-    console.warn('Unexpected response format:', response.data);
-    return []; // Fallback to empty array
-  }
+  return response.data;
 };
 
 // Function to get a single project by its ID

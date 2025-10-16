@@ -6,12 +6,6 @@ Sebuah aplikasi web full-stack untuk PT. Rosa Lisca Group yang menampilkan profi
 
 PT. Rosa Lisca Group adalah perusahaan konstruksi yang bergerak di bidang General Contractor, Civil Engineering, Supplier, Microtunnelling, dan Sistem Drainase. Website ini dikembangkan untuk meningkatkan presence digital perusahaan dan menyediakan platform manajemen internal yang komprehensif.
 
-## 🌐 Live Demo
-
-- **🌍 Website Publik**: [https://rosalisca.vercel.app](https://rosalisca.vercel.app)
-- **⚙️ API Backend**: [https://rosalisca-backend.vercel.app](https://rosalisca-backend.vercel.app)
-- **🔐 Admin Panel**: [https://rosalisca.vercel.app/admin](https://rosalisca.vercel.app/admin)
-
 ## 🚀 Fitur Utama
 
 ### Frontend (Website Publik)
@@ -284,7 +278,7 @@ Proyek ini sudah dikonfigurasi untuk deployment mudah ke Vercel:
    NODE_ENV=production
    MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/rosalisca
    JWT_SECRET=your_jwt_secret_here
-   FRONTEND_URL=https://rosalisca.vercel.app
+   FRONTEND_URL=https://your-frontend-domain.vercel.app
    ```
 
 #### Frontend Deployment
@@ -293,7 +287,7 @@ Proyek ini sudah dikonfigurasi untuk deployment mudah ke Vercel:
 2. Deploy frontend ke Vercel dari folder `frontend/`
 3. Set environment variables:
    ```
-   VITE_API_URL=https://rosalisca-backend.vercel.app/api
+   VITE_API_URL=https://your-backend-domain.vercel.app/api
    ```
 
 📖 **Untuk panduan deployment lengkap, lihat [DEPLOYMENT-GUIDE.md](./DEPLOYMENT-GUIDE.md)**

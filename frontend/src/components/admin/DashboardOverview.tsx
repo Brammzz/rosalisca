@@ -53,7 +53,7 @@ const StatCard = ({ icon, title, value, colorClass, trend, trendValue }: {
           <div className={`mr-4 text-4xl ${colorClass}`}>{icon}</div>
           <div>
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-3xl font-bold">{(value || 0).toLocaleString()}</p>
+            <p className="text-3xl font-bold">{value.toLocaleString()}</p>
             {trend && trendValue && (
               <div className="flex items-center mt-2 text-sm">
                 <FiTrendingUp className={`mr-1 w-3 h-3 ${
