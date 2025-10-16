@@ -33,13 +33,14 @@ const app = express();
 const corsOptions = {
   origin: [
     'http://localhost:5173', // Local development
-    'https://rosalisca-frontend.vercel.app', 
-    // Add your production frontend URLs here after deployment
-    // 'https://your-frontend-domain.vercel.app'
+    'https://rosalisca-frontend.vercel.app',
+    'https://rosalisca.vercel.app', // Add the actual frontend domain
+    'https://*.vercel.app', // Allow all Vercel subdomains
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 };
 
 // Middleware
