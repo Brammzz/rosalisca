@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
 import connectDB from '../src/config/db.js';
 import authRoutes from '../src/routes/authRoutes.js';
 import adminRoutes from '../src/routes/adminRoutes.js';
@@ -82,6 +83,9 @@ app.use(customCors); // Apply custom CORS first
 
 // Additional middleware to ensure CORS headers are always present
 app.use((req, res, next) => {
+  // Log all requests for debugging
+  console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+  
   // Ensure CORS headers are always set, even if custom CORS fails
   if (!res.getHeader('Access-Control-Allow-Origin')) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -96,6 +100,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use(cookieParser());
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -116,6 +121,20 @@ app.get('/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
+  });
+});
+
+app.get('/api/debug', (req, res) => {
+  res.json({ 
+    message: 'Debug endpoint working',
+    routes: {
+      auth: '/api/auth/login',
+      health: '/health',
+      projects: '/api/projects',
+      clients: '/api/clients'
+    },
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
   });
 });
 
