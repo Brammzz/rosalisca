@@ -3,12 +3,14 @@
 ## Current Configuration
 
 ### Backend (Express.js)
+
 - **Framework**: Express.js (serverless)
 - **Entry Point**: `server.js`
 - **Build**: Not required (Node.js)
 - **Routes**: All routes handled by Express app
 
 ### Frontend (Vite + React)
+
 - **Framework**: Vite
 - **Build Command**: `npm run build`
 - **Output Directory**: `dist`
@@ -17,6 +19,7 @@
 ## Configuration Files
 
 ### Backend vercel.json
+
 ```json
 {
   "version": 2,
@@ -46,6 +49,7 @@
 ```
 
 ### Frontend vercel.json
+
 ```json
 {
   "version": 2,
@@ -75,40 +79,48 @@
 ### Backend Issues
 
 **1. "Cannot resolve module" Error**
+
 - Ensure all imports use `.js` extensions
 - Check that all dependencies are in package.json
 
 **2. "Database connection failed"**
+
 - Verify MongoDB URI in environment variables
 - Check IP whitelist in MongoDB Atlas
 
 **3. "Function timeout"**
+
 - Increase maxDuration in vercel.json
 - Optimize database queries
 
 ### Frontend Issues
 
 **1. "Build failed" Error**
+
 - Check TypeScript errors: `npm run type-check`
 - Verify all dependencies are installed
 
 **2. "404 on page refresh"**
+
 - Ensure SPA routing is configured in vercel.json
 - Check route configuration
 
 **3. "API calls failing in production"**
+
 - Verify VITE_API_URL in environment variables
 - Check CORS configuration in backend
 
 ## Deployment Checklist
 
 ### Pre-deployment
+
 - [ ] All code committed and pushed to GitHub
 - [ ] MongoDB Atlas cluster configured
 - [ ] Environment variables prepared
 - [ ] CORS origins updated for production URLs
 
 ### Backend Deployment
+
 - [ ] Project imported in Vercel
 - [ ] Root directory set to `backend`
 - [ ] Environment variables configured
@@ -116,6 +128,7 @@
 - [ ] API endpoints tested
 
 ### Frontend Deployment
+
 - [ ] Project imported in Vercel
 - [ ] Root directory set to `frontend`
 - [ ] Build command set to `npm run build`
@@ -126,6 +139,7 @@
 - [ ] API integration working
 
 ### Post-deployment
+
 - [ ] CORS updated with production URLs
 - [ ] Backend redeployed with updated CORS
 - [ ] All features tested in production
@@ -150,6 +164,7 @@ open https://rosalisca.vercel.app
 ## Environment Variables
 
 ### Backend
+
 ```
 NODE_ENV=production
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/rosalisca
@@ -158,6 +173,7 @@ FRONTEND_URL=https://rosalisca.vercel.app
 ```
 
 ### Frontend
+
 ```
 VITE_API_URL=https://rosalisca-backend.vercel.app/api
 ```

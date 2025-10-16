@@ -2,7 +2,7 @@
 
 ## Persiapan Sebelum Deployment
 
-### 1. Setup MongoDB Atl      'https://rosalisca.vercel.app', // URL frontend Vercel Andas (Database Production)
+### 1. Setup MongoDB Atl 'https://rosalisca.vercel.app', // URL frontend Vercel Andas (Database Production)
 
 1. **Buat akun di [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)**
 2. **Buat cluster baru:**
