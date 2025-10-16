@@ -63,12 +63,25 @@ app.use(customCors); // Apply custom CORS first
 app.use(express.json());
 
 // Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 console.log('Registering API routes...');
 // Routes
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  res.json({ 
+    message: 'Rosalisca API is running...',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    routes: ['/api/auth', '/api/projects', '/api/clients', '/api/contacts', '/api/careers', '/api/certificates', '/api/companies']
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 app.use('/api/auth', authRoutes);
@@ -106,25 +119,31 @@ app.use('*', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+// Vercel serverless function handler
+let dbConnected = false;
 
-const startServer = async () => {
-  try {
-    await connectDB();
-    
-    // Only start listening in development (not in Vercel)
-    if (process.env.NODE_ENV !== 'production') {
-      app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-    }
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    if (process.env.NODE_ENV !== 'production') {
-      process.exit(1);
+const initDB = async () => {
+  if (!dbConnected) {
+    try {
+      await connectDB();
+      dbConnected = true;
+      console.log('Database connected successfully');
+    } catch (error) {
+      console.error('Database connection failed:', error);
     }
   }
 };
 
-startServer();
-
-// Export the app for Vercel
-export default app;
+// Vercel handler
+export default async (req, res) => {
+  try {
+    await initDB();
+    return app(req, res);
+  } catch (error) {
+    console.error('Handler error:', error);
+    return res.status(500).json({ 
+      error: 'Server initialization failed',
+      message: error.message 
+    });
+  }
+};
