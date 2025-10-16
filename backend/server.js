@@ -31,11 +31,8 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:5173', // Local development
       'http://localhost:3000', // Alternative local port
-      'https://rosalisca-frontend.vercel.app',
-      process.env.FRONTEND_URL, // Dynamic frontend URL from env
-      // Add your custom domain here
-      'https://rosalisca.com',
-      'https://www.rosalisca.com'
+      'https://rosalisca.vercel.app', // Production frontend
+      process.env.FRONTEND_URL // Dynamic frontend URL from env
     ].filter(Boolean); // Remove undefined values
     
     if (allowedOrigins.includes(origin)) {

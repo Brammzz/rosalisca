@@ -39,24 +39,29 @@ import { protect, authorize } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 // Configure multer for file uploads
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+
 const createUploadDir = (dir) => {
-  if (!fs.existsSync(dir)) {
+  // Only create directory in development
+  if (!isProduction && !fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 };
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = path.join(process.cwd(), 'uploads', 'applications');
-    createUploadDir(uploadDir);
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const extension = path.extname(file.originalname);
-    cb(null, file.fieldname + '-' + uniqueSuffix + extension);
-  }
-});
+const storage = isProduction 
+  ? multer.memoryStorage()
+  : multer.diskStorage({
+      destination: function (req, file, cb) {
+        const uploadDir = path.join(process.cwd(), 'uploads', 'applications');
+        createUploadDir(uploadDir);
+        cb(null, uploadDir);
+      },
+      filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const extension = path.extname(file.originalname);
+        cb(null, file.fieldname + '-' + uniqueSuffix + extension);
+      }
+    });
 
 const fileFilter = (req, file, cb) => {
   // Allowed file types
