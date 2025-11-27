@@ -107,6 +107,8 @@ export default {
 				'fade-in': 'fadeIn 0.6s ease-out',
 				'slide-up': 'slideUp 0.6s ease-out',
 				'scale-in': 'scaleIn 0.3s ease-out',
+				'accordion-down': 'accordion-down 0.2s ease-out',
+				'accordion-up': 'accordion-up 0.2s ease-out',
 			},
 			keyframes: {
 				fadeIn: {
@@ -137,6 +139,9 @@ export default {
 						height: '0'
 					}
 				}
+			},
+			transitionDuration: {
+				'6000': '6000ms',
 			}
 		}
 	},
