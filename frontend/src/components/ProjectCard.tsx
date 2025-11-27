@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, Building, CheckCircle, Users } from 'lucide-react';
 import { Project } from '@/services/projectService';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 interface ProjectCardProps {
   project: Project;
@@ -46,29 +47,27 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, detailPath }) => {
       <div className="relative overflow-hidden">
         <div className="w-full h-64 overflow-hidden">
           {project.image ? (
-            <img
+            <OptimizedImage
               src={getImageUrl(project.image)}
               alt={project.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              onError={(e) => {
-                // Fallback to placeholder if image fails to load
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                target.nextElementSibling?.classList.remove('hidden');
-              }}
+              loading="lazy"
+              width={400}
+              height={256}
             />
-          ) : null}
-          <div className={`w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 ${project.image ? 'hidden' : ''}`}>
-            <div className="text-center p-6">
-              <Building className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-sm text-gray-500 font-medium">
-                Dokumentasi Proyek
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                {getCategoryLabel(project.category)}
-              </p>
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+              <div className="text-center p-6">
+                <Building className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-sm text-gray-500 font-medium">
+                  Dokumentasi Proyek
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {getCategoryLabel(project.category)}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
         
         <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">

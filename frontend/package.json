@@ -7,8 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "build:production": "vite build --mode production",
-    "build:dev": "vite build --mode development",
+    "build:analyze": "vite build --mode production && npx vite-bundle-analyzer dist/stats.json",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "type-check": "tsc --noEmit"
   },

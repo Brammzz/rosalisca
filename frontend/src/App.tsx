@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,43 +7,32 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ContentProvider } from "@/contexts/ContentContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import Index from "./pages/Index";
-import About from "./pages/About";
-import Projects from "./pages/Projects";
-import ProjectDetail from "./pages/ProjectDetail";
-import BusinessUnits from "./pages/BusinessUnits";
-import Clients from "./pages/Clients";
-import Careers from "./pages/Careers";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
-import Dashboard from "./pages/admin/Dashboard";
-import Login from "./pages/admin/Login";
-
-// Subsidiary profile pages
-import JhonRoProfile from "./pages/subsidiaries/JhonRoProfile";
-import GunungSahidProfile from "./pages/subsidiaries/GunungSahidProfile";
-import ArimadaPersadaProfile from "./pages/subsidiaries/ArimadaPersadaProfile";
-
-// Subsidiary project pages
-import SubsidiaryProjects from "./pages/SubsidiaryProjects";
-
-// Subsidiary project detail pages
-import SubsidiaryProjectDetail from "@/pages/SubsidiaryProjectDetail";
-
 import ScrollToTop from "@/components/helpers/ScrollToTop";
+import {
+  Index, About, Projects, ProjectDetail, BusinessUnits, Clients, Careers, Contact, NotFound,
+  Dashboard, Login, JhonRoProfile, GunungSahidProfile, ArimadaPersadaProfile,
+  SubsidiaryProjects, SubsidiaryProjectDetail
+} from "@/components/LazyPages";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0, // Force fresh data
-      refetchOnMount: true,
-      refetchOnWindowFocus: true,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      refetchOnMount: 'always',
+      refetchOnWindowFocus: false, // Disable untuk performance
+      retry: 1, // Reduce retry untuk faster failure handling
     },
   },
 });
 
-// Clear cache on app start to ensure fresh data
-queryClient.clear();
+// Loading component untuk suspense
+const PageLoading = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <span className="ml-2 text-gray-600">Memuat halaman...</span>
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -54,35 +44,35 @@ const App = () => (
           <BrowserRouter>
             <ScrollToTop />
             <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/projects/:id" element={<ProjectDetail />} />
-            <Route path="/business-units" element={<BusinessUnits />} />
+            <Route path="/" element={<Suspense fallback={<PageLoading />}><Index /></Suspense>} />
+            <Route path="/about" element={<Suspense fallback={<PageLoading />}><About /></Suspense>} />
+            <Route path="/projects" element={<Suspense fallback={<PageLoading />}><Projects /></Suspense>} />
+            <Route path="/projects/:id" element={<Suspense fallback={<PageLoading />}><ProjectDetail /></Suspense>} />
+            <Route path="/business-units" element={<Suspense fallback={<PageLoading />}><BusinessUnits /></Suspense>} />
             
             {/* Subsidiary Routes */}
-            <Route path="/business-units/jhon-ro/profile" element={<JhonRoProfile />} />
-            <Route path="/business-units/:companyName/projects" element={<SubsidiaryProjects />} />
-            <Route path="/business-units/:companyName/projects/:id" element={<SubsidiaryProjectDetail />} />
-            <Route path="/business-units/gunung-sahid/profile" element={<GunungSahidProfile />} />
-            <Route path="/business-units/arimada-persada/profile" element={<ArimadaPersadaProfile />} />
+            <Route path="/business-units/jhon-ro/profile" element={<Suspense fallback={<PageLoading />}><JhonRoProfile /></Suspense>} />
+            <Route path="/business-units/:companyName/projects" element={<Suspense fallback={<PageLoading />}><SubsidiaryProjects /></Suspense>} />
+            <Route path="/business-units/:companyName/projects/:id" element={<Suspense fallback={<PageLoading />}><SubsidiaryProjectDetail /></Suspense>} />
+            <Route path="/business-units/gunung-sahid/profile" element={<Suspense fallback={<PageLoading />}><GunungSahidProfile /></Suspense>} />
+            <Route path="/business-units/arimada-persada/profile" element={<Suspense fallback={<PageLoading />}><ArimadaPersadaProfile /></Suspense>} />
             
-            <Route path="/clients" element={<Clients />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path="/clients" element={<Suspense fallback={<PageLoading />}><Clients /></Suspense>} />
+            <Route path="/careers" element={<Suspense fallback={<PageLoading />}><Careers /></Suspense>} />
+            <Route path="/contact" element={<Suspense fallback={<PageLoading />}><Contact /></Suspense>} />
             
             {/* Admin Authentication Routes */}
-            <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin/login" element={<Suspense fallback={<PageLoading />}><Login /></Suspense>} />
             
             {/* Protected Admin Dashboard Routes */}
             <Route path="/admin/*" element={
               <ProtectedRoute>
-                <Dashboard />
+                <Suspense fallback={<PageLoading />}><Dashboard /></Suspense>
               </ProtectedRoute>
             } />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Suspense fallback={<PageLoading />}><NotFound /></Suspense>} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

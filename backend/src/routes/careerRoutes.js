@@ -41,13 +41,6 @@ const router = express.Router();
 // Configure multer for file uploads
 const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
 
-const createUploadDir = (dir) => {
-  // Only create directory in development
-  if (!isProduction && !fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-};
-
 const storage = isProduction 
   ? multer.memoryStorage()
   : multer.diskStorage({

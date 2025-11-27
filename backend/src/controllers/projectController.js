@@ -22,7 +22,10 @@ if (isProduction) {
     destination: async (req, file, cb) => {
       const uploadPath = path.join(__dirname, '../../uploads/projects');
       try {
-        await fs.mkdir(uploadPath, { recursive: true });
+        // Only create directory in development
+        if (!isProduction) {
+          await fs.mkdir(uploadPath, { recursive: true });
+        }
         cb(null, uploadPath);
       } catch (error) {
         cb(error);
