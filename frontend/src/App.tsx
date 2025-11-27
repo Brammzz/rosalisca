@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,11 +8,26 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ContentProvider } from "@/contexts/ContentContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import ScrollToTop from "@/components/helpers/ScrollToTop";
-import {
-  Index, About, Projects, ProjectDetail, BusinessUnits, Clients, Careers, Contact, NotFound,
-  Dashboard, Login, JhonRoProfile, GunungSahidProfile, ArimadaPersadaProfile,
-  SubsidiaryProjects, SubsidiaryProjectDetail
-} from "@/components/LazyPages";
+
+// Lazy load pages untuk code splitting
+const Index = lazy(() => import('./pages/Index'));
+const About = lazy(() => import('./pages/About'));
+const Projects = lazy(() => import('./pages/Projects'));
+const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
+const BusinessUnits = lazy(() => import('./pages/BusinessUnits'));
+const Clients = lazy(() => import('./pages/Clients'));
+const Careers = lazy(() => import('./pages/Careers'));
+const Contact = lazy(() => import('./pages/Contact'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const Login = lazy(() => import('./pages/admin/Login'));
+
+// Subsidiary pages
+const JhonRoProfile = lazy(() => import('./pages/subsidiaries/JhonRoProfile'));
+const GunungSahidProfile = lazy(() => import('./pages/subsidiaries/GunungSahidProfile'));
+const ArimadaPersadaProfile = lazy(() => import('./pages/subsidiaries/ArimadaPersadaProfile'));
+const SubsidiaryProjects = lazy(() => import('./pages/SubsidiaryProjects'));
+const SubsidiaryProjectDetail = lazy(() => import('./pages/SubsidiaryProjectDetail'));
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -96,7 +96,7 @@ const HeroSlider = () => {
           >
             {/* Background Image */}
             <div
-              className={`w-full h-full bg-cover bg-center bg-no-repeat transition-transform duration-6000 ease-in-out ${index === currentSlide ? 'scale-110' : 'scale-100'}`}
+              className={`w-full h-full bg-cover bg-center bg-no-repeat transition-transform duration-[6000ms] ease-in-out ${index === currentSlide ? 'scale-110' : 'scale-100'}`}
               style={{
                 backgroundImage: `url('${slide.image}')`,
               }}

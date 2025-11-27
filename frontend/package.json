@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "build:production": "vite build --mode production",
+    "build": "NODE_OPTIONS='--max_old_space_size=4096' vite build",
+    "build:production": "NODE_OPTIONS='--max_old_space_size=4096' vite build --mode production",
     "build:analyze": "vite build --mode production && npx vite-bundle-analyzer dist/stats.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
