@@ -26,14 +26,13 @@ const CertificateCard: React.FC<CertificateCardProps> = ({ certificate, onClick 
       <div className="relative overflow-hidden">
         <div className="w-full aspect-[3/4] bg-gray-100 flex items-center justify-center p-4 overflow-hidden">
           <OptimizedImage
-            src={getImageUrl(certificate.image.replace(/\.(jpg|jpeg|png)$/i, '.webp'))}
-            alt={`Sertifikat: ${certificate.title} oleh ${certificate.issuer}`}
+            src={getImageUrl(certificate.image)}
+            alt={certificate.title}
             className="max-w-full max-h-full object-contain rounded-md shadow-sm group-hover:scale-110 transition-transform duration-500"
             loading="lazy"
             width={300}
             height={400}
             placeholder="/images/placeholder-certificate.jpg"
-            onError={() => {}}
           />
         </div>
         
